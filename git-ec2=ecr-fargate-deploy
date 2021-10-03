@@ -1,1 +1,109 @@
+To begin, since the docker file is already existing in a repository, we just need to: 
 
+Navigate to the AWS console, then to ECR dashboard and create a repo. Just give a name and chose private then create the repo 
+
+Install docker on your EC2 server 
+
+Create an ECRfullaccess role and attach an ec2 permission to the role 
+
+Navigate to the ec2 dashbaord and select the docker server and then under action select security and then IAM role, then on the drop down select the ECR role you created and attach to the instance. 
+
+After this ssh into the server and then run the following commands 
+
+   sudo yum install git –y   
+
+(to install git) 
+
+   git version                       
+
+(to check git version) 
+
+  git clone https://bitbucket.org/ananthkannan/mydockerrepo; cd mydockerrepo/pythonApp    (to clone the repository where your file is located) 
+
+  s –al   
+
+( to check if the file has been pulled to your server) 
+
+  docker build . -t mypythonapp  
+
+ ( to build an image out of the file you pulled) 
+
+   docker image ls   
+
+ ( to see if the image has been build) 
+
+   docker tag mypythonapp:latest 272285828557.dkr.ecr.us-east-1.amazonaws.com/cave:latest   (to name the image) 
+
+   docker images 
+
+ (to view the imaged named 
+
+  docker push 272285828557.dkr.ecr.us-east-1.amazonaws.com/cave:latest 
+
+ (to push to ECR) 
+
+After this has been pushed to ECR, we can either deploy it to be hosted in EC2 instances, ECS fargate. 
+
+If you deploy to EC2, you will have to manage the underlying infrastructure such as the scaling of the app, the security, the update and patching etc 
+
+If you deploy to AWS fargate, you do not have to manage anything about the infrastructure since fargate is serverless and aws manages the underlying infrastructure for you. 
+
+You can also deploy to EKS. 
+
+ 
+Follow these links for the demo 
+
+https://www.youtube.com/watch?v=asIS4KIs40M 
+
+https://www.cidevops.com/2020/05/how-to-setup-elastic-container-registry.html 
+
+youtube.com/watch?v=D8ym8RP1yvo 
+
+youtube.com/watch?v=JzsSjcyN3MI 
+
+STEPS TO DEPLOY FROM ECR TO ECS-FARGATE. 
+
+Once on the console search for ECS and select 
+
+Select create cluster 
+
+Select NETWORKING ONLY then click next 
+
+Give a cluster name then create 
+
+On the ECS dashboard select task definition and chose CREATE NEW TASK DEFINITION 
+
+Select fargate as the lunch type compatibility and select next step 
+
+Specify task definition name then leave task execution role set to default. 
+
+For task memory and task CPU select the minimal values 
+
+Under container definition, select add container 
+
+Give a container name  
+
+In the image box, pass the URL or your ECR image from the ECR dashboard 
+
+Keep the memory limit to 128GB 
+
+Specify ports mappings then leave everything as default and click add 
+
+Leave everthing in the configuration task and container definition page as it is and select create in the lower left conner of the page. 
+
+Go back to ECS page and select task definition then you will see your newly created task as active 
+
+Select the task in the task definition list, click action and select run task. 
+
+For lunch type, select fargate 
+
+Make sure cluster is set to the target cluster you created  
+
+Select a vpc under cluster vpc and subnet. Auto assign public ip should be enable 
+
+Edit security group to port as desired (5000) 
+
+Once the status shows running, get the public ip and past it on the browser then : port number. 
+
+
+https://towardsdatascience.com/deploying-a-docker-container-with-ecs-and-fargate-7b0cbc9cd608
